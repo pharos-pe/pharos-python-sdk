@@ -109,7 +109,15 @@ class Product:
 
 @dataclass(frozen=True)
 class ItemBase:
-    """Fields shared by VehicleItem and ProductItem."""
+    """Fields shared by VehicleItem and ProductItem.
+
+    `retrieved_at` is set only when the item was fetched on its own, through
+    `declarations.item(...)`. Pharos puts it at the top level of every response,
+    which for a list is the envelope: read `ListEnvelope.retrieved_at` there, or
+    `Declaration.retrieved_at` for the items inside a declaration. It says when
+    Pharos built the response, not when the declaration was read from customs —
+    that is `created_at` and `updated_at`.
+    """
 
     object: str
     item_number: int

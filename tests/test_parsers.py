@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from decimal import Decimal
 
 import pytest
@@ -11,6 +12,7 @@ from pharos_sdk.models import (
     Importer,
     ProductItem,
     VehicleItem,
+    WebhookEvent,
 )
 from pharos_sdk.parsers import parse_declaration, parse_item, parse_webhook_event
 from pharos_sdk.parsers.declarations import parse_declaration_summary
@@ -28,6 +30,7 @@ from pharos_sdk.parsers.primitives import (
     parse_uuid,
     string,
 )
+from pharos_sdk.parsers.webhook_events import BASE_WEBHOOK_KEYS
 from tests.fixtures import (
     declaration_payload,
     product_item_payload,
@@ -174,6 +177,20 @@ def test_parse_webhook_deleted_event() -> None:
 
     assert isinstance(event, DeclarationDeletedEvent)
     assert event.declaration.full_number == "118-2026-10-001234-00"
+
+
+def test_the_known_webhook_keys_are_exactly_the_event_fields() -> None:
+    """What is not a field of the event is what lands in `extra`.
+
+    The contract declares `additionalProperties: true`, so a typed event needs
+    somewhere to put whatever an endpoint has configured on top of the
+    documented keys. `BASE_WEBHOOK_KEYS` is what decides the boundary, and it is
+    a second list of the same names: add a field here and forget it there, and
+    the value arrives twice — once typed and once inside `extra`.
+    """
+    fields = {field.name for field in dataclasses.fields(WebhookEvent)}
+
+    assert fields - {"extra"} == BASE_WEBHOOK_KEYS
 
 
 def test_parse_webhook_flags_an_unknown_event_on_its_own() -> None:
