@@ -284,7 +284,14 @@ class WebhookDeclarationRef:
 
 @dataclass(frozen=True)
 class WebhookEvent:
-    """Base webhook event payload."""
+    """Base webhook event payload.
+
+    `extra` holds whatever the endpoint was configured to send on top of the
+    documented keys. The contract allows them — `additionalProperties: true` —
+    and a typed event has to give them one named home or drop them, so anything
+    that is not a field above arrives here. Values keep their JSON type, except
+    on a form-encoded endpoint, where a form carried no types and they are text.
+    """
 
     event_id: UUID
     event: str

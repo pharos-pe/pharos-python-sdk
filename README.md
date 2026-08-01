@@ -194,6 +194,10 @@ your system deliberately ignores event types unknown to this SDK version.
 Deduplicate on `event.event_id`. It is the same across retries **and** across
 every endpoint subscribed to the same fact, which the delivery id is not.
 
+Anything Pharos was asked to add to your notifications — a tenant identifier, a
+routing key — arrives in `event.extra`, keyed as you configured it. The
+documented fields are attributes; `extra` is everything else.
+
 ## Development
 
 ```bash
