@@ -49,7 +49,17 @@ jobs:
           python-version: '3.12'
       - name: Check the tag matches the package version
         run: |
-          version="$(python -c 'import pathlib, re; print(re.search(r"\"(.+)\"", pathlib.Path("pharos_sdk/version.py").read_text()).group(1))')"
+          # Anchored to the assignment: an unanchored quoted-string match reads
+          # the module docstring instead, which is what it did the first time
+          # this guard ever ran.
+          version="$(python - <<'PY'
+          import pathlib
+          import re
+
+          text = pathlib.Path("pharos_sdk/version.py").read_text()
+          print(re.search(r'^__version__\s*=\s*"([^"]+)"', text, re.M).group(1))
+          PY
+          )"
           tag="${GITHUB_REF_NAME#v}"
           if [ "$version" != "$tag" ]; then
             echo "Tag $GITHUB_REF_NAME does not match version.py ($version)." >&2
