@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.0 - Unreleased
+## 0.2.0 - 2026-08-03
 
 - Parse `declaration.validation_completed` into `DeclarationValidationCompletedEvent`,
   with the result typed as `ValidationResult`, `ValidationFinding`,
