@@ -2,7 +2,8 @@
 
 Official Python SDK for Pharos Connect.
 
-- Documentation: https://pharos.pe/desarrolladores/
+- Documentation: https://pharos.pe/desarrolladores/connectors/python/
+- Package: https://pypi.org/project/pharos-sdk/
 - Repository: https://github.com/pharos-pe/pharos-python-sdk
 
 ## Installation
