@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import replace
-from typing import Dict, Tuple, Type, cast
+from typing import Callable, Dict, Tuple, Type, cast
 from uuid import UUID
 
 from pharos_sdk.exceptions import UnsupportedWebhookEvent
@@ -41,6 +40,20 @@ from pharos_sdk.parsers.primitives import (
 )
 from pharos_sdk.types import JSONObject, JSONValue
 
+EventBuilder = Callable[
+    [
+        Type[WebhookEvent],
+        str,
+        JSONObject,
+        str,
+        UUID,
+        WebhookDeclarationRef,
+        ImporterRef,
+        Dict[str, object],
+    ],
+    WebhookEvent,
+]
+
 
 def parse_webhook_event(payload: JSONObject, *, path: str = "$") -> WebhookEvent:
     """Parse a webhook event payload into the event-specific dataclass."""
@@ -71,7 +84,8 @@ def parse_webhook_event(payload: JSONObject, *, path: str = "$") -> WebhookEvent
     except LookupError as e:
         raise UnsupportedWebhookEvent(event_name) from e
     else:
-        event = build_event(
+        build = EVENT_BUILDERS[event_name]
+        return build(
             event_class,
             event_name,
             payload,
@@ -81,13 +95,6 @@ def parse_webhook_event(payload: JSONObject, *, path: str = "$") -> WebhookEvent
             importer,
             extra,
         )
-        if isinstance(event, DeclarationValidationCompletedEvent):
-            validation_payload = field_object(payload, key="validation", path=path)
-            validation_path = f"{path}.validation"
-            validation = parse_validation_result(validation_payload, path=validation_path)
-            return replace(event, validation=validation)
-        else:
-            return event
 
 
 def parse_webhook_declaration_ref(payload: JSONObject, *, path: str) -> WebhookDeclarationRef:
@@ -258,3 +265,39 @@ def build_event(
         resource_url=field_string(payload, key="resource_url", path=path),
         extra=extra,
     )
+
+
+def build_validation_completed_event(
+    event_class: Type[WebhookEvent],
+    event_name: str,
+    payload: JSONObject,
+    path: str,
+    event_id: UUID,
+    declaration: WebhookDeclarationRef,
+    importer: ImporterRef,
+    extra: Dict[str, object],
+) -> WebhookEvent:
+    """Build a validation event, whose result is a field of its own."""
+    validation_payload = field_object(payload, key="validation", path=path)
+    validation_path = f"{path}.validation"
+    return DeclarationValidationCompletedEvent(
+        event_id=event_id,
+        event=event_name,
+        occurred_at=field_datetime(payload, key="occurred_at", path=path),
+        revision=field_int(payload, key="revision", path=path),
+        declaration=declaration,
+        importer=importer,
+        resource_url=field_string(payload, key="resource_url", path=path),
+        extra=extra,
+        validation=parse_validation_result(validation_payload, path=validation_path),
+    )
+
+
+EVENT_BUILDERS: Dict[str, EventBuilder] = {
+    "declaration.ingested": build_event,
+    "declaration.corrected": build_event,
+    "declaration.deleted": build_event,
+    "declaration.validation_completed": build_validation_completed_event,
+}
+
+assert EVENT_CLASSES.keys() == EVENT_BUILDERS.keys()
