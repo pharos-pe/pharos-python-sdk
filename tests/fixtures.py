@@ -189,3 +189,76 @@ def webhook_payload() -> Dict[str, object]:
         "resource_url": "https://app.pharos.pe/api/v1/declarations/118-2026-10-001234-00",
         "client_reference": "abc",
     }
+
+
+def validation_webhook_payload() -> Dict[str, object]:
+    return {
+        "event_id": "c4f1a9d2-77b3-4e1a-9c05-1d8e2f6a4b70",
+        "event": "declaration.validation_completed",
+        "occurred_at": "2026-07-30T15:04:11.882014+00:00",
+        "revision": 1,
+        "declaration": {
+            "full_number": "118-2026-10-001234-00",
+            "customs_office_code": "118",
+            "year": 2026,
+            "number": 1234,
+            "numbering_date": "2026-06-01",
+            "items_count": 12,
+        },
+        "importer": {"ruc": "20100000001", "name": "EMPRESA DEMO S.A.C."},
+        "resource_url": "https://app.pharos.pe/api/v1/declarations/118-2026-10-001234-00",
+        "validation": {
+            "status": "issues_detected",
+            "rules_evaluated_count": 3,
+            "findings_count": 2,
+            "severity_counts": {"critical": 0, "high": 2, "medium": 0, "low": 0},
+            "findings": [
+                {
+                    "rule_code": "duplicate_vin_in_declaration",
+                    "rule_version": 1,
+                    "category": "identifier_conflict",
+                    "severity": "high",
+                    "scope": "declaration",
+                    "item_number": 3,
+                    "message": "The vin LZPAERLMXRB000946 appears on 2 items.",
+                    "evidence": {
+                        "identifier_type": "vin",
+                        "identifier_value": "LZPAERLMXRB000946",
+                        "match_scope": "same_declaration",
+                        "occurrence_count": 2,
+                        "item_numbers": [3, 7],
+                        "item_numbers_truncated": False,
+                    },
+                },
+                {
+                    "rule_code": "duplicate_engine_number",
+                    "rule_version": 1,
+                    "category": "identifier_conflict",
+                    "severity": "high",
+                    "scope": "account_history",
+                    "item_number": 4,
+                    "message": "The engine_number 120YC6040403NA250516 is already recorded.",
+                    "evidence": {
+                        "identifier_type": "engine_number",
+                        "identifier_value": "120YC6040403NA250516",
+                        "occurrence_count": 2,
+                        "occurrences_truncated": False,
+                        "occurrences": [
+                            {
+                                "match_scope": "authorized_importers",
+                                "declaration_full_number": "118-2025-10-009876-00",
+                                "item_number": 4,
+                                "numbering_date": "2025-11-14",
+                            },
+                            {
+                                "match_scope": "external_importer",
+                                "numbering_date": "2026-02-03",
+                                "customs_office_code": "235",
+                            },
+                        ],
+                    },
+                },
+            ],
+            "evaluated_at": "2026-07-30T15:04:11.640922+00:00",
+        },
+    }

@@ -19,7 +19,7 @@ FORM_CONTENT_TYPE = "application/x-www-form-urlencoded"
 
 # What the form encoding flattened, and all it flattened: the objects Pharos
 # sends as JSON text, and the one integer it sends as digits.
-FORM_OBJECT_FIELDS = ("declaration", "importer")
+FORM_OBJECT_FIELDS = ("declaration", "importer", "validation")
 FORM_INTEGER_FIELDS = ("revision",)
 
 

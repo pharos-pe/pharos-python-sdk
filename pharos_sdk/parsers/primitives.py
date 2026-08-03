@@ -111,6 +111,33 @@ def field_datetime(payload: JSONObject, key: str, *, path: str) -> datetime:
     return parse_datetime(value, path=field_path)
 
 
+def absent_or(
+    payload: JSONObject,
+    key: str,
+    parser: Callable[..., T],
+    *,
+    path: str,
+) -> Optional[T]:
+    """Parse a field the payload is allowed not to carry at all.
+
+    Unlike the `field_optional_*` helpers, which demand the key and accept
+    `null` as its value.
+    """
+    if key not in payload or payload[key] is None:
+        return None
+    else:
+        field_path = f"{path}.{key}"
+        return parser(payload[key], path=field_path)
+
+
+def boolean(value: JSONValue, *, path: str) -> bool:
+    """Parse a JSON boolean value."""
+    if isinstance(value, bool):
+        return value
+    else:
+        raise ResponseDecodeError(f"Expected boolean at {path}.")
+
+
 def string(value: JSONValue, *, path: str) -> str:
     """Parse a JSON string value."""
     if isinstance(value, str):

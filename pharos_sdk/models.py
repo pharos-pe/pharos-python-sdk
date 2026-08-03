@@ -316,3 +316,89 @@ class DeclarationCorrectedEvent(WebhookEvent):
 @dataclass(frozen=True)
 class DeclarationDeletedEvent(WebhookEvent):
     """Webhook event emitted before a declaration is removed."""
+
+
+@dataclass(frozen=True)
+class SeverityCounts:
+    """Findings of each severity, with the zeros included."""
+
+    critical: int
+    high: int
+    medium: int
+    low: int
+
+
+@dataclass(frozen=True)
+class ValidationOccurrence:
+    """Another declaration carrying the same identifier.
+
+    Only a match inside your own companies is named; outside them the contract
+    carries the date and the customs office alone. Read `match_scope` first.
+    """
+
+    match_scope: str
+    numbering_date: date
+    declaration_full_number: Optional[str] = None
+    item_number: Optional[int] = None
+    customs_office_code: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class ValidationEvidence:
+    """The values that triggered a finding, as they were at that moment.
+
+    Which keys appear depends on the rule; those this version does not document
+    arrive in `extra`, as they do on `WebhookEvent`.
+    """
+
+    identifier_type: Optional[str] = None
+    identifier_value: Optional[str] = None
+    match_scope: Optional[str] = None
+    occurrence_count: Optional[int] = None
+    item_numbers: Tuple[int, ...] = ()
+    item_numbers_truncated: Optional[bool] = None
+    occurrences: Tuple[ValidationOccurrence, ...] = ()
+    occurrences_truncated: Optional[bool] = None
+    extra: Dict[str, object] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class ValidationFinding:
+    """One thing a rule observed about a series of the declaration."""
+
+    rule_code: str
+    rule_version: int
+    category: str
+    severity: str
+    scope: str
+    item_number: Optional[int]
+    message: str
+    evidence: ValidationEvidence
+
+
+@dataclass(frozen=True)
+class ValidationResult:
+    """The aggregated outcome of validating one declaration revision.
+
+    `status` is `issues_detected` or `passed`; a run where a rule did not
+    execute is never reported at all.
+    """
+
+    status: str
+    rules_evaluated_count: int
+    findings_count: int
+    severity_counts: SeverityCounts
+    findings: Tuple[ValidationFinding, ...]
+    evaluated_at: Optional[datetime]
+
+
+@dataclass(frozen=True)
+class DeclarationValidationCompletedEvent(WebhookEvent):
+    """Webhook event emitted when Pharos finished reviewing a declaration.
+
+    `validation` is always present on a delivered event; it is typed `Optional`
+    only because a dataclass on Python 3.8 cannot follow a defaulted field with
+    a required one.
+    """
+
+    validation: Optional[ValidationResult] = None

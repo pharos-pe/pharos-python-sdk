@@ -12,7 +12,6 @@ from pharos_sdk.models import (
     Importer,
     ProductItem,
     VehicleItem,
-    WebhookEvent,
 )
 from pharos_sdk.parsers import parse_declaration, parse_item, parse_webhook_event
 from pharos_sdk.parsers.declarations import parse_declaration_summary
@@ -30,7 +29,7 @@ from pharos_sdk.parsers.primitives import (
     parse_uuid,
     string,
 )
-from pharos_sdk.parsers.webhook_events import BASE_WEBHOOK_KEYS
+from pharos_sdk.parsers.webhook_events import BASE_WEBHOOK_KEYS, EVENT_CLASSES
 from tests.fixtures import (
     declaration_payload,
     product_item_payload,
@@ -180,15 +179,19 @@ def test_parse_webhook_deleted_event() -> None:
 
 
 def test_the_known_webhook_keys_are_exactly_the_event_fields() -> None:
-    """What is not a field of the event is what lands in `extra`.
+    """What is not a field of an event is what lands in `extra`.
 
     The contract declares `additionalProperties: true`, so a typed event needs
     somewhere to put whatever an endpoint has configured on top of the
     documented keys. `BASE_WEBHOOK_KEYS` is what decides the boundary, and it is
     a second list of the same names: add a field here and forget it there, and
-    the value arrives twice — once typed and once inside `extra`.
+    the value arrives twice — once typed and once inside `extra`. Every event
+    class counts, not only the base: an event with a field of its own puts the
+    same name at risk.
     """
-    fields = {field.name for field in dataclasses.fields(WebhookEvent)}
+    fields = set()
+    for event_class in EVENT_CLASSES.values():
+        fields |= {field.name for field in dataclasses.fields(event_class)}
 
     assert fields - {"extra"} == BASE_WEBHOOK_KEYS
 

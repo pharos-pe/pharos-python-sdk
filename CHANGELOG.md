@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0 - Unreleased
+
+- Parse `declaration.validation_completed` into `DeclarationValidationCompletedEvent`,
+  with the result typed as `ValidationResult`, `ValidationFinding`,
+  `ValidationEvidence`, `ValidationOccurrence` and `SeverityCounts`.
+- Read the evidence of a finding without assuming its shape: which keys a rule
+  writes depends on the rule, and one this version does not document arrives in
+  `evidence.extra` rather than being dropped.
+- Accept the validation result over a form-encoded endpoint, where the whole
+  block travels as one JSON string.
+
 ## 0.1.0 - 2026-08-02
 
 - Initial Pharos Connect SDK with sync and async clients.
