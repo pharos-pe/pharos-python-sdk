@@ -44,6 +44,20 @@ with PharosClient(os.environ["PHAROS_API_KEY"]) as client:
     importers = client.importers.list()
 ```
 
+### Looking a vehicle up by VIN or engine number
+
+Available only to keys Pharos has enabled for it; any other key raises
+`AuthorizationError`. The match is exact, and you pass one identifier:
+
+```python
+result = client.vehicles.find(vin="LSJA24U98RG000001")
+# or: client.vehicles.find(engine_number="TZ220XS0001")
+
+print(result.scope)  # "scoped": your companies only, "global": all of them
+for match in result.data:
+    print(match.declaration.full_number, match.in_scope, match.vehicle.brand)
+```
+
 ### Sending the key in `X-Pharos-Key`
 
 The key travels in `Authorization: Bearer …` by default. Pharos also accepts it

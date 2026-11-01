@@ -8,7 +8,11 @@ import httpx
 
 from pharos_sdk.base import BaseClient
 from pharos_sdk.config import BASE_URL, AuthScheme, AuthSchemeInput, make_config
-from pharos_sdk.resources import AsyncDeclarationsResource, AsyncImportersResource
+from pharos_sdk.resources import (
+    AsyncDeclarationsResource,
+    AsyncImportersResource,
+    AsyncVehiclesResource,
+)
 from pharos_sdk.transport import AsyncTransport
 
 
@@ -35,6 +39,7 @@ class AsyncPharosClient(BaseClient):
         )
         self.transport = AsyncTransport(config, http_client=http_client)
         self.importers = AsyncImportersResource(self.transport)
+        self.vehicles = AsyncVehiclesResource(self.transport)
         self.declarations = AsyncDeclarationsResource(self.transport)
 
     async def close(self) -> None:

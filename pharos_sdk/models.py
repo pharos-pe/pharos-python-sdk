@@ -20,6 +20,7 @@ class ListEnvelope(Generic[T]):
     retrieved_at: datetime
     data: Tuple[T, ...]
     limit: Optional[int] = None
+    scope: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -147,6 +148,27 @@ class ItemBase:
     invoice_numbers: Tuple[str, ...]
     status: str
     retrieved_at: Optional[datetime]
+
+
+@dataclass(frozen=True)
+class VehicleMatchDeclaration:
+    """The declaration a looked-up vehicle came from."""
+
+    full_number: str
+    numbering_date: date
+    customs_office: CustomsOffice
+    importer: ImporterRef
+
+
+@dataclass(frozen=True)
+class VehicleMatch:
+    """A vehicle found by exact VIN or engine number, with its declaration line."""
+
+    object: str
+    in_scope: bool
+    declaration: VehicleMatchDeclaration
+    item_number: int
+    vehicle: Vehicle
 
 
 @dataclass(frozen=True)

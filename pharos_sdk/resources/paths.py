@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Optional, Union
 from urllib.parse import quote
 
+from pharos_sdk.exceptions import ConfigurationError
 from pharos_sdk.models import DeclarationNumber
 from pharos_sdk.types import QueryParams
 
@@ -17,6 +18,16 @@ def latest_params(limit: Optional[int]) -> Optional[QueryParams]:
         return None
     else:
         return {"limit": limit}
+
+
+def vehicle_lookup_params(*, vin: Optional[str], engine_number: Optional[str]) -> QueryParams:
+    """Build query parameters for the vehicle lookup, which takes exactly one identifier."""
+    if (vin is None) == (engine_number is None):
+        raise ConfigurationError("Pass exactly one of vin or engine_number.")
+    elif vin is not None:
+        return {"vin": vin}
+    else:
+        return {"engine_number": str(engine_number)}
 
 
 def declaration_path(full_number: DeclarationNumberInput) -> str:

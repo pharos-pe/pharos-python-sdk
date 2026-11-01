@@ -93,6 +93,31 @@ def vehicle_item_payload() -> Dict[str, object]:
     }
 
 
+def vehicle_match_payload() -> Dict[str, object]:
+    return {
+        "object": "vehicle_match",
+        "in_scope": False,
+        "declaration": {
+            "full_number": "118-2026-10-001234-00",
+            "numbering_date": "2026-03-04",
+            "customs_office": {"code": "118", "name": "MARITIMA DEL CALLAO"},
+            "importer": {"ruc": "20100000003", "name": "GREENLINE TRES S.A.C."},
+        },
+        "item_number": 1,
+        "vehicle": vehicle_payload(),
+    }
+
+
+def vehicle_lookup_payload() -> Dict[str, object]:
+    return {
+        "object": "list",
+        "scope": "global",
+        "count": 1,
+        "retrieved_at": "2026-03-04T12:00:00+00:00",
+        "data": [vehicle_match_payload()],
+    }
+
+
 def product_item_payload() -> Dict[str, object]:
     item = vehicle_item_payload()
     item.pop("vehicle")

@@ -8,7 +8,7 @@ import httpx
 
 from pharos_sdk.base import BaseClient
 from pharos_sdk.config import BASE_URL, AuthScheme, AuthSchemeInput, make_config
-from pharos_sdk.resources import DeclarationsResource, ImportersResource
+from pharos_sdk.resources import DeclarationsResource, ImportersResource, VehiclesResource
 from pharos_sdk.transport import SyncTransport
 
 
@@ -35,6 +35,7 @@ class PharosClient(BaseClient):
         )
         self.transport = SyncTransport(config, http_client=http_client)
         self.importers = ImportersResource(self.transport)
+        self.vehicles = VehiclesResource(self.transport)
         self.declarations = DeclarationsResource(self.transport)
 
     def close(self) -> None:

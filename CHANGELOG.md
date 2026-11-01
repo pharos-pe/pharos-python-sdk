@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.0 - Unreleased
+
+- Look a vehicle up by exact VIN or engine number with
+  `client.vehicles.find(vin=...)` or `find(engine_number=...)`, on both
+  clients. It needs a key Pharos has enabled for it; any other key raises
+  `AuthorizationError`.
+- Read each match as a `VehicleMatch`: the vehicle, the declaration and item it
+  came from, and `in_scope`, whether that declaration belongs to your
+  companies. The result's `scope` says whether the search covered only your
+  companies or all of them.
+
 ## 0.2.0 - 2026-08-03
 
 - Parse `declaration.validation_completed` into `DeclarationValidationCompletedEvent`,

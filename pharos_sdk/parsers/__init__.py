@@ -8,6 +8,7 @@ from pharos_sdk.parsers.declarations import (
 from pharos_sdk.parsers.envelopes import parse_list_envelope
 from pharos_sdk.parsers.importers import parse_importer, parse_importer_value
 from pharos_sdk.parsers.items import parse_item, parse_item_value
+from pharos_sdk.parsers.vehicles import parse_vehicle_match, parse_vehicle_match_value
 from pharos_sdk.parsers.webhook_events import parse_webhook_event
 
 __all__ = [
@@ -19,5 +20,7 @@ __all__ = [
     "parse_item",
     "parse_item_value",
     "parse_list_envelope",
+    "parse_vehicle_match",
+    "parse_vehicle_match_value",
     "parse_webhook_event",
 ]
