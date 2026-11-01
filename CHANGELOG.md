@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 - Unreleased
+## 0.3.0 - 2026-10-31
 
 - Look a vehicle up by exact VIN or engine number with
   `client.vehicles.find(vin=...)` or `find(engine_number=...)`, on both
